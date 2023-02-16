@@ -41,14 +41,19 @@ import Jimp = require("jimp");
 			return res.status(400).send(`URL is invalid`);
 		}
 
-		let filteredImage = await filterImageFromURL(image_url);
-		console.log("Local file path:" + filteredImage);
+		try {
+			let filteredImage = await filterImageFromURL(image_url);
+			console.log("Local file path:" + filteredImage);
 
-		req.on("close", function () {
-			deleteLocalFiles([filteredImage]);
-		});
+			req.on("close", function () {
+				deleteLocalFiles([filteredImage]);
+			});
 
-		res.status(200).sendFile(filteredImage);
+			res.status(200).sendFile(filteredImage);
+		} catch (error) {
+			console.log("Error: " + error);
+			res.status(422).send("Cannot process given image.");
+		}
 	});
 
 	function isValidUrl(urlToValidate: string): boolean {
